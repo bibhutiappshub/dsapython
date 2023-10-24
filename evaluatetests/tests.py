@@ -1,12 +1,12 @@
 import time
 
+RED = '\033[91m'
+GREEN = '\033[32m'
+END = '\033[0m'
+BOLD = '\033[1m'
 
-def print_result(test_input, actual_output, execution_time):
-    RED = '\033[91m'
-    GREEN = '\033[32m'
-    END = '\033[0m'
-    BOLD = '\033[1m'
 
+def print_result(test_input, actual_output, execution_time, is_passed):
     print(f"""
             Input:
                 {test_input["input"]}
@@ -20,51 +20,44 @@ def print_result(test_input, actual_output, execution_time):
             Execution Time:
                 {execution_time}ms
                 
-            Test Result: {f"{BOLD}{GREEN}PASSED{END}" if test_input['output'] == actual_output else f"{BOLD}{RED}FAILED{END}"}
+            Test Result: {f"{BOLD}{GREEN}PASSED{END}" if is_passed else f"{BOLD}{RED}FAILED{END}"}
         """)
 
 
+def print_test_summary(total_tests, success_tests, failed_tests):
+    print(f"{BOLD}SUMMARY:{END}")
+    print(f"{BOLD}TOTAL:{END} {total_tests} {BOLD}{GREEN}PASSED:{END} {success_tests} {BOLD}{RED}FAILED:{END} {failed_tests}")
+
+
 def evaluate_tests(func, tests):
+    total_tests = len(tests)
+    success_tests = 0
+    failed_tests = 0
+    is_passed = False
+
     if type(tests) == dict:
         result, exec_time = get_func_execution_time(func, tests)
         print_result(tests, result, exec_time)
     else:
         for idx, test in enumerate(tests):
-            print(f"\033[1mTEST CASE #{idx}\033[0;0m")
+            print(f"{BOLD}TEST CASE #{idx}{END}")
             result, exec_time = get_func_execution_time(func, test)
-            print_result(test, result, exec_time)
+
+            if test["output"] == result:
+                success_tests += 1
+                is_passed = True
+            else:
+                failed_tests += 1
+                is_passed = False
+
+            print_result(test, result, exec_time, is_passed)
+
+    print_test_summary(total_tests, success_tests, failed_tests)
 
 
 def get_func_execution_time(func, test):
     start = time.time()
     result = func(test)
     end = time.time()
-    exec_time = float(end-start)
+    exec_time = end-start
     return result, exec_time
-
-
-def linear_search(test_input):
-    pos = 0
-    while pos < len(test_input["input"]["cards"]):
-        if test_input["input"]["cards"][pos] == test_input["input"]["query"]:
-            return pos
-        pos += 1
-
-    return -1
-
-
-search_test_cases = [
-    {"input": {"cards": [12, 8, 7, 5, 3], "query": 12}, "output": 0},
-    {"input": {"cards": [35, 23, 16, 7, 1], "query": 1}, "output": 4},
-    {"input": {"cards": [78, 67, 43, 25, 18], "query": 43}, "output": 2},
-    {"input": {"cards": [23, 19, 17, 12, 0], "query": 19}, "output": 1},
-    {"input": {"cards": [33, 16, 13, 9, 2], "query": 5}, "output": -1},
-    {"input": {"cards": [58, 25, 47, 54, 89], "query": 54}, "output": -1},
-    {"input": {"cards": [], "query": 10}, "output": -1},
-    {"input": {"cards": [416, 203, 203, 105, 105, 92, 92], "query": 105}, "output": 3}
-]
-
-test = {"input": {"cards": [12, 8, 7, 5, 3], "query": 12}, "output": 0}
-
-evaluate_tests(linear_search, search_test_cases)
-# evaluate_tests(search_func, test)

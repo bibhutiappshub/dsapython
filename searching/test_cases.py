@@ -5,5 +5,6 @@ search_test_cases = [
     {"input": {"cards": [23, 19, 17, 12, 0], "query": 19}, "output": 1},
     {"input": {"cards": [33, 16, 13, 9, 2], "query": 5}, "output": -1},
     {"input": {"cards": [], "query": 10}, "output": -1},
+    {"input": {"cards": [], "query": 10}, "output": 1},
     {"input": {"cards": [416, 203, 203, 105, 105, 92, 92], "query": 105}, "output": 3}
 ]
